@@ -378,6 +378,9 @@
       }
       changeViewValue(ngModelController, modelValue, prepend, append);
       setCaretPosition(element[0],cursorPosition-1);
+      if(ngModelController.$modelValue === undefined) {
+        return "";
+      }
       return ngModelController.$modelValue;
     }
     /**
