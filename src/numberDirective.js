@@ -361,7 +361,7 @@
       return 0;
     }
     if(parsedValue === undefined || parsedValue === ''){
-      return 0;
+      return '';
     }
     if(parsedValue === '-'){
       changeViewValue(ngModelController, '-', prepend, append);
