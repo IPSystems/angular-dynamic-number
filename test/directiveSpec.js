@@ -67,7 +67,7 @@ describe('Angular-dynamic-number basic', function() {
         expect($scope.testForm.testInput.$viewValue).toEqual('0');
       });
     });
-    describe('number format: 2 integeres, decimals dot separator, positive and negative', function() {
+    describe('number format: 2 integers, decimals dot separator, positive and negative', function() {
       beforeEach(function(){
         $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="2" num-sep="." num-fract="2"/></form>')($scope);
         $scope.$digest();
@@ -128,7 +128,7 @@ describe('Angular-dynamic-number basic', function() {
         expect($scope.testForm.testInput.$viewValue).not.toEqual('11,11');
       });
     });
-    describe('number format: 2 integeres, decimals comma separator, positive and negative', function() {
+    describe('number format: 2 integers, decimals comma separator, positive and negative', function() {
       beforeEach(function(){
         var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="2" num-sep="," num-fract="2"/></form>')($scope);
         $scope.$digest();
@@ -159,7 +159,7 @@ describe('Angular-dynamic-number basic', function() {
         expect($scope.testForm.testInput.$viewValue).not.toEqual('11.11');
       });
     });
-    describe('number format: 2 integeres, decimals comma separator, positive and negative, dot thousand separator', function() {
+    describe('number format: 2 integers, decimals comma separator, positive and negative, dot thousand separator', function() {
       beforeEach(function(){
         var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="8" num-sep="," num-fract="2" num-thousand="true"/></form>')($scope);
         $scope.$digest();
@@ -175,7 +175,7 @@ describe('Angular-dynamic-number basic', function() {
         expect($scope.testForm.testInput.$viewValue).toEqual('-111.111,11');
       });
     });
-    describe('number format: 2 integeres, decimals dot separator, positive and negative, comma thousand separator', function() {
+    describe('number format: 2 integers, decimals dot separator, positive and negative, comma thousand separator', function() {
       beforeEach(function(){
         var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="8" num-sep="." num-fract="2" num-thousand="true"/></form>')($scope);
         $scope.$digest();
@@ -191,7 +191,23 @@ describe('Angular-dynamic-number basic', function() {
         expect($scope.testForm.testInput.$viewValue).toEqual('-111,111.11');
       });
     });
-    describe('number format: 2 integeres, decimals comma separator, negative', function() {
+    describe('number format: integers, positive', function() {
+      beforeEach(function(){
+        var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="2" num-sep="," num-fract="2" num-neg="false"/></form>')($scope);
+        $scope.$digest();
+      });
+      it('should have view value empty and model value 0 when set -', function () {
+        $scope.testForm.testInput.$setViewValue('-');
+        expect($scope.testInput).toEqual(0);
+        expect($scope.testForm.testInput.$viewValue).toEqual('');
+      });
+      it('should have view value 0, and model value 0, when set ,', function () {
+        $scope.testForm.testInput.$setViewValue(',');
+        expect($scope.testInput).toEqual(0);
+        expect($scope.testForm.testInput.$viewValue).toEqual('0,');
+      });
+    });
+    describe('number format: 2 integers, decimals comma separator, negative', function() {
       beforeEach(function(){
         var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="2" num-sep="," num-fract="2" num-pos="false"/></form>')($scope);
         $scope.$digest();
@@ -217,7 +233,7 @@ describe('Angular-dynamic-number basic', function() {
         expect($scope.testForm.testInput.$viewValue).not.toEqual('11.11');
       });
     });
-    describe('number format: 6 integeres, decimals dot separator, positive and negative, space thousand separator', function() {
+    describe('number format: 6 integers, decimals dot separator, positive and negative, space thousand separator', function() {
       beforeEach(function(){
         var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="8" num-sep="." num-fract="2" num-thousand="true"  num-thousand-sep="{{\' \'}}"/></form>')($scope);
         $scope.$digest();
@@ -231,6 +247,22 @@ describe('Angular-dynamic-number basic', function() {
         $scope.testForm.testInput.$setViewValue('-111 111.11');
         expect($scope.testInput).toEqual('-111111.11');
         expect($scope.testForm.testInput.$viewValue).toEqual('-111 111.11');
+      });
+    });
+    describe('number format: 6 integers, decimals dot separator, positive and negative, apostrophe thousand separator', function() {
+      beforeEach(function(){
+        var el = $compile('<form name="testForm"><input type="text" name="testInput" ng-model="testInput" awnum num-int="8" num-sep="." num-fract="2" num-thousand="true"  num-thousand-sep="\'"/></form>')($scope);
+        $scope.$digest();
+      });
+      it('should have view value 111\'111.11 and model value 111111.11 when set 111\'111.11', function () {
+        $scope.testForm.testInput.$setViewValue('111\'111.11');
+        expect($scope.testInput).toEqual('111111.11');
+        expect($scope.testForm.testInput.$viewValue).toEqual('111\'111.11');
+      });
+      it('should have view value -111\'111.11 and model value -111111.11 when set -111\'111.11', function () {
+        $scope.testForm.testInput.$setViewValue('-111\'111.11');
+        expect($scope.testInput).toEqual('-111111.11');
+        expect($scope.testForm.testInput.$viewValue).toEqual('-111\'111.11');
       });
     });
     describe('custom strategy provider', function(){
@@ -275,11 +307,16 @@ describe('Angular-dynamic-number basic', function() {
     });
   });
   describe('filter', function(){
-    var $filter;
+    var $filter, dynamicNumberStrategyProvider;
+    beforeEach(function() {
+      module(function(_dynamicNumberStrategyProvider_) {
+        dynamicNumberStrategyProvider = _dynamicNumberStrategyProvider_;
+      });
+    });
     beforeEach(inject(function(_$filter_){
       $filter = _$filter_;
     }));
-    describe('number format: 2 integeres, decimals comma separator, negative', function() {
+    describe('number format: 2 integers, decimals comma separator, negative', function() {
       it('should return 0 when value null', function () {
         expect($filter('awnum')(null)).toEqual('0');
       });
@@ -293,9 +330,27 @@ describe('Angular-dynamic-number basic', function() {
         expect($filter('awnum')('11.00',2, ',','round','true')).toEqual('11,00');
       });
     });
-    describe('number format: 6 integeres, decimals comma separator, thousand dot separator', function() {
+    describe('number format: 6 integers, decimals comma separator, thousand dot separator', function() {
       it('should return 1.111,29 when value \'1111.287\' ', function () {
         expect($filter('awnum')('1111.287',2, ',','round','false','true')).toEqual('1.111,29');
+      });
+    });
+    describe('filter with custom strategy', function() {
+      beforeEach(function() {
+        dynamicNumberStrategyProvider.addStrategy('price', {
+          numFract: 1,
+          numSep: '.',
+          numPos: true,
+          numNeg: true,
+          numRound: 'round',
+          numThousand: true
+        });
+      });
+      it('should return 1,111.2 when value \'1111.16\' ', function () {
+        expect($filter('awnum')('1111.16', 'price')).toEqual('1,111.2');
+      });
+      it('should return 1.111,2 when value \'1111.16\' ', function () {
+        expect($filter('awnum')('1111.16', 'price', ',')).toEqual('1.111,2');
       });
     });
   });
